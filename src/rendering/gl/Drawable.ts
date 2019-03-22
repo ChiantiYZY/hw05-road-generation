@@ -6,6 +6,10 @@ abstract class Drawable {
   bufIdx: WebGLBuffer;
   bufPos: WebGLBuffer;
   bufNor: WebGLBuffer;
+  bufTransform1: WebGLBuffer;
+  bufTransform2: WebGLBuffer;
+  bufTransform3: WebGLBuffer;
+  bufTransform4: WebGLBuffer;
   bufTranslate: WebGLBuffer;
   bufCol: WebGLBuffer;
   bufUV: WebGLBuffer;
@@ -14,10 +18,14 @@ abstract class Drawable {
   posGenerated: boolean = false;
   norGenerated: boolean = false;
   colGenerated: boolean = false;
+  transformGenerated1: boolean = false;
+  transformGenerated2: boolean = false;
+  transformGenerated3: boolean = false;
+  transformGenerated4: boolean = false;
   translateGenerated: boolean = false;
   uvGenerated: boolean = false;
 
-  numInstances: number = 0; // How many instances of this Drawable the shader program should draw
+  numInstances: number = 1; // How many instances of this Drawable the shader program should draw
 
   abstract create() : void;
 
@@ -26,6 +34,9 @@ abstract class Drawable {
     gl.deleteBuffer(this.bufPos);
     gl.deleteBuffer(this.bufNor);
     gl.deleteBuffer(this.bufCol);
+    gl.deleteBuffer(this.bufTransform1);
+    gl.deleteBuffer(this.bufTransform2);
+    gl.deleteBuffer(this.bufTransform3);
     gl.deleteBuffer(this.bufTranslate);
     gl.deleteBuffer(this.bufUV);
   }
@@ -48,6 +59,23 @@ abstract class Drawable {
   generateCol() {
     this.colGenerated = true;
     this.bufCol = gl.createBuffer();
+  }
+
+  generateTransform1() {
+    this.transformGenerated1 = true;
+    this.bufTransform1 = gl.createBuffer();
+  }
+  generateTransform2() {
+    this.transformGenerated2 = true;
+    this.bufTransform2 = gl.createBuffer();
+  }
+  generateTransform3() {
+    this.transformGenerated3 = true;
+    this.bufTransform3 = gl.createBuffer();
+  }
+  generateTransform4() {
+    this.transformGenerated4 = true;
+    this.bufTransform4 = gl.createBuffer();
   }
 
   generateTranslate() {
@@ -88,6 +116,31 @@ abstract class Drawable {
     return this.colGenerated;
   }
 
+  bindTransform1(): boolean {
+    if (this.transformGenerated1) {
+      gl.bindBuffer(gl.ARRAY_BUFFER, this.bufTransform1);
+    }
+    return this.transformGenerated1;
+  }
+
+  bindTransform2(): boolean {
+    if (this.transformGenerated2) {
+      gl.bindBuffer(gl.ARRAY_BUFFER, this.bufTransform2);
+    }
+    return this.transformGenerated2;
+  }
+  bindTransform3(): boolean {
+    if (this.transformGenerated3) {
+      gl.bindBuffer(gl.ARRAY_BUFFER, this.bufTransform3);
+    }
+    return this.transformGenerated1;
+  }
+  bindTransform4(): boolean {
+    if (this.transformGenerated4) {
+      gl.bindBuffer(gl.ARRAY_BUFFER, this.bufTransform4);
+    }
+    return this.transformGenerated1;
+  }
   bindTranslate(): boolean {
     if (this.translateGenerated) {
       gl.bindBuffer(gl.ARRAY_BUFFER, this.bufTranslate);
