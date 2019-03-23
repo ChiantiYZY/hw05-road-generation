@@ -20,6 +20,7 @@ export default class Turtle {
     this.up = vec3.fromValues(0, 1, 0);
     this.forward = vec3.fromValues(0, 0, 1);
     this.right = vec3.fromValues(1, 0, 0);
+    this.orientation = quat.fromEuler(this.orientation, 0, 0, 0);
     // this.scale = vec3.fromValues(1, 1, 1);
   }
 
@@ -80,7 +81,8 @@ export default class Turtle {
 
   copy(turtle: Turtle) {
     //vec3.copy(this.position, turtle.prevPos);
-    vec3.copy(this.prevPos, turtle.prevPos);
+    // vec3.copy(this.position, turtle.position);
+    // vec3.copy(this.prevPos, turtle.prevPos);
     quat.copy(this.orientation, turtle.orientation);
     vec3.copy(this.up, turtle.up);
     vec3.copy(this.right, turtle.right);
@@ -89,6 +91,7 @@ export default class Turtle {
 
 
     this.position = vec3.fromValues(turtle.position[0], turtle.position[1], turtle.position[2]);
+    this.prevPos = vec3.fromValues(turtle.prevPos[0], turtle.prevPos[1], turtle.prevPos[2]);
   }
 
 

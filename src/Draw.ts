@@ -3,6 +3,7 @@ import Turtle from './Turtle';
 import Terrain from './Terrain';
 import {readTextFile} from './globals';
 import Mesh from './geometry/Mesh';
+import { totalmem } from 'os';
 //import { scale } from 'gl-matrix/src/gl-matrix/vec2';
 
 export default class Draw {
@@ -15,6 +16,8 @@ export default class Draw {
     ang : number;
     map = new Terrain();
 
+    roads = new Array();
+
     //scale = Math.random();
 
     constructor()
@@ -26,6 +29,68 @@ export default class Draw {
         this.ang = 1.0;
 
     }
+
+    intersectionTest(e0: vec3, e1: vec3, o0: vec3, o1: vec3) {
+		// convert to Ax + By = C form
+		var A1 = e1[1] - e0[1];
+		var B1 = e0[0] - e1[0];
+		var C1 = A1 * e0[0] + B1 * e0[1];
+		
+		var A2 = o1[1] - o0[1];
+		var B2 = o0[0] - o1[0];
+		var C2 = A2 * o0[0] + B2 * o0[1];
+
+		var det = A1 * B2 - A2 * B1;
+
+		// parallel lines
+		if (Math.abs(det) < 0.001) {
+			return false;
+		} else { 
+			var x = (B2 * C1 - B1 * C2) / det;
+            var y = (A1 * C2 - A2 * C1) / det;
+            
+            var intersection = vec3.fromValues(x, y, 0);
+            
+            var e_left = Math.min(e0[0], e1[0]);
+            var e_right = Math.max(e0[0], e1[0]);
+            var o_left = Math.min(o0[0], o1[0]);
+            var o_right = Math.max(o0[0], o1[0]);
+
+            if(x > e_left && x < e_right && x > o_left && x < o_right)
+            {
+                var e_down = Math.min(e0[1], e1[1]);
+                var e_up = Math.max(e0[1], e1[1]);
+                var o_down = Math.min(o0[1], o1[1]);
+                var o_up = Math.max(o0[1], o1[1]);
+
+                if(y > e_down && y < e_up && y > o_down && y < o_up)
+                {
+                    return true;
+                }
+
+            }
+			return false;
+		}
+    }
+    
+
+    getIntersection(e0: vec3, e1: vec3, o0: vec3, o1: vec3) {
+		var A1 = e1[1] - e0[1];
+		var B1 = e0[0] - e1[0];
+		var C1 = A1 * e0[0] + B1 * e0[1];
+		
+		var A2 = o1[1] - o0[1];
+		var B2 = o0[0] - o1[0];
+		var C2 = A2 * o0[0] + B2 * o0[1];
+
+        var det = A1 * B2 - A2 * B1;
+        
+        var x = (B2 * C1 - B1 * C2) / det;
+        var y = (A1 * C2 - A2 * C1) / det;
+        var intersection = vec3.fromValues(x, y, 0);
+
+        return intersection;
+	}
 
     pushTurtle()
     {
@@ -101,7 +166,7 @@ export default class Draw {
         // console.log('check seek');
         var cur_map = this.turtles.map;
         var step = 1.0;
-        var angle = 3.14 / 8.0;
+        var angle = 2.0 * 3.14 / 4.0;
 
         var highDense = 0;
 
@@ -109,65 +174,83 @@ export default class Draw {
 
         let new_turtle = new Turtle();
 
-        var i = Math.random() * 100 % 8;
+       
 
         // this.cur.rotateOnZ(angle * i);
         // this.cur.growUp(0.3);
 
 
-        // for(var i = 0; i < 8; i++)
-        // {
-        //     let tmp = new Turtle();
-        //     tmp.copy(this.cur);
-        //     tmp.rotateOnZ(angle * i);
-        //     tmp.growUp(0.3);
-        //     var position = tmp.position;
 
-        //     //.log('tmp pos: ');
+            let tmp = new Turtle();
+            tmp.copy(this.cur);
 
-        //     var density = this.map.getDensity(position);
+            var dis = vec3.fromValues(0, 0, 0);
+            var length = 100;
 
-        //     //console.log('density is: ' + density);
-        //     if(highDense < density)
-        //     {
-        //         flag = true;
-        //         highDense = density;
-        //         new_turtle.copy(tmp);
-  
-        //     }
+            var i = Math.random() * 100 % 4;
+                tmp.rotateOnZ(angle * i);
+                tmp.growUp(0.6);
+
+                vec3.subtract(dis, tmp.position, tmp.prevPos);
+                length = Math.sqrt(dis[0] * dis[0] + dis[1] * dis[1]);
+
             
-        // }
+            
+            while(length < 0.05)
+            {
+                tmp.copy(this.cur);
+                var i = Math.random() * 100 % 4;
+                tmp.rotateOnZ(angle * i);
+                tmp.growUp(0.6);
+                vec3.subtract(dis, tmp.position, tmp.prevPos);
+                console.log(dis);
+                length = Math.sqrt(dis[0] * dis[0] + dis[1] * dis[1]);
+            }
 
-        // if(flag == true)
-        // {
-        //     this.turtles.push(new_turtle);
-        //     this.cur.copy(new_turtle);
-        //     // console.log('cur density: ' + this.map.getDensity(this.cur.position));
-        //     // console.log('cur position:' + (this.cur.position)) ;
-        // }
-        // else
-        // {
-        //     this.popTurtle();
-        // }
+           
+            var position = tmp.position;
 
-        
+            var density = this.map.getDensity(position);
 
-        this.cur.rotateOnZ(3.14 / 2.0);
-        
-        this.cur.growUp(0.3);
+            if(highDense < density)
+            {
+                flag = true;
+                highDense = density;
+                new_turtle.copy(tmp);
+            }
 
-
+            if(density < 0)
+            {
+                this.popTurtle();
+                return;
+            }
 
 
-        // let tmp = new Turtle();
-        // tmp.rotateOnZ(0.25);
-        // tmp.growUp(0.1);
+        for(var i = 0; i < this.roads.length; i++)
+        {
+            var e0 = this.roads[i][0];
+            var e1 = this.roads[i][1];
+            if(this.intersectionTest(e0, e1, new_turtle.prevPos, new_turtle.position))
+            {
+                console.log('chekc');
+                var isect = this.getIntersection(e0, e1, new_turtle.prevPos, new_turtle.position);
+                new_turtle.position = isect;
+            }
+        }
+            
+            
+            if(flag)
+            {
+                this.cur.copy(new_turtle);
+                this.pushTurtle();
+                this.roads.push([this.cur.prevPos, this.cur.position]);
+            }
+            else
+            {
+                if(this.turtles.length > 0)
+                    this.popTurtle();
+            }
 
-
-
-        //this.growUp();
-        // console.log('cur turtle is: ');
-        // console.log(this.cur);
     }
 
     setRule()

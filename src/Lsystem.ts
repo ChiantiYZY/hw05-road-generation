@@ -46,41 +46,13 @@ export default class Lsytem {
         //console.log('grammar array size: ' + this.grammars.length);
         //if haven't iterated so much
 
-        
-        if(this.iteration >= this.grammars.length)
+        this.grammar = '';
+        for(var i = 0; i < this.iteration; i++)
         {
-
-            //console.log('check cur iteration: ' + this.iteration);
-            //find the last expanded grammar 
-            var lastIndex = this.grammars.length - 1;
-
-            //calculate how much more iterations are needed 
-            var moreIteration = this.iteration - this.grammars.length;
-
-            for(var i = lastIndex; i < this.iteration; i++)
-            {
-                let last = this.grammars[lastIndex];
-                // console.log('lst is:' + last); 
-                let newStr = '';
-                for(var j = 0; j < last.length; j++)
-                {
-                    newStr += this.expanse.expanse(last[j]);
-                }
-
-                //console.log('newStr is: ' + newStr);
-                //push the new string to the grammar list 
-                this.grammars.push(newStr);
-                //update the last index
-                lastIndex++;
-            }
-
-            return this.grammars[lastIndex];
+            this.grammar += 'BABA';
         }
-        else
-        {
-            return this.grammars[this.iteration];
-        }
-        
+
+
         return this.grammar;
 
     }
@@ -238,24 +210,23 @@ export default class Lsytem {
         let count = 0;
 
         var grammar = this.expansion();
+        //grammar = 'BABABABABABABABABA';
+
+        console.log('grammar is: ' + grammar + '\n');
 
 
-        //var grammar = 'BA';
-
-        console.log(grammar);
 
         var prePos = vec2.fromValues(0, 0);
 
-        
-        //console.log('grammar is: ' + grammar + '\n');
+        //this.drawing.cur = new Turtle();
+
         for(var i = 0; i < grammar.length; i++)
         {
             
             this.drawing.draw(grammar[i]);
-            
+            this.isMesh = false;
 
             //this.drawing.sca = 5.0 / this.num;
-
 
             let pos = this.drawing.cur.position;
             let rot = this.drawing.cur.orientation;
@@ -271,7 +242,6 @@ export default class Lsytem {
             vec3.subtract(test, pos, pre);
             test = vec3.fromValues(test[0] / 2.0, test[1] / 2.0, 0);
             
-
             let radii = 1.0;
             
             if(grammar[i] == 'A' )
@@ -287,7 +257,7 @@ export default class Lsytem {
             vec3.subtract(translatePos, pos, pre);
 
 
-            let transPivot = vec3.fromValues( length, 0, 0);
+            let transPivot = vec3.fromValues(0, -length/2.0, 0);
             let movePivot = mat4.create();
             mat4.fromTranslation(movePivot, transPivot);
 
@@ -296,9 +266,7 @@ export default class Lsytem {
             let transform = mat4.create();
             let rotate = mat4.create();
             let translate = mat4.create();
-            //let scalar = vec3.fromValues(0.01, length * 2, 0);
-
-            let scalar = vec3.fromValues(0.01, length * 2, 0);
+            let scalar = vec3.fromValues(0.01, length, 0);
 
             let scalation = mat4.create();
             mat4.fromQuat(rotate, rot);
@@ -308,15 +276,13 @@ export default class Lsytem {
 
            //console.log(translate);
             mat4.fromScaling(scalation, scalar);
-           // mat4.multiply(scalation, movePivot, scalation);
-            // mat4.multiply(transform, rotate, translate);
-            // mat4.multiply(transform, transform, scalation);
 
 
-
-            // mat4.multiply(rotate, rotate, movePivot);
-            mat4.multiply(rotate, rotate, scalation);
-            mat4.multiply(transform, translate, rotate);
+           
+            mat4.multiply(transform, scalation, transform);
+            mat4.multiply(transform, movePivot, transform);
+            mat4.multiply(transform, rotate, transform);
+            mat4.multiply(transform, translate, transform);
 
 
             // mat4.multiply(translate, scalation, translate);

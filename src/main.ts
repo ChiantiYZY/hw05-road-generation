@@ -166,7 +166,7 @@ function main() {
   // Add controls to the gui
   const gui = new DAT.GUI();
 
-  gui.add(controls, 'iteration', 1, 8).step(1);
+  gui.add(controls, 'iteration', 1, 20).step(1);
   // gui.add(controls, 'angle', 0, 2).step(0.1);
   // gui.addColor(controls, 'color1');
   // gui.addColor(controls, 'color2');
