@@ -6170,7 +6170,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 // Define an object with application parameters and button callbacks
 // This will be referred to by dat.GUI's functions that add GUI elements.
 const controls = {
-    iteration: 0,
+    highwayDensity: 0,
     gridDensity: 0,
     // angle: 1,
     // color1: [0.2314 * 255, 0.149 * 255, 0.0],
@@ -6208,7 +6208,7 @@ function main() {
     var show = { add: function () { flag = true; } };
     // Add controls to the gui
     const gui = new __WEBPACK_IMPORTED_MODULE_2_dat_gui__["GUI"]();
-    gui.add(controls, 'iteration', 0, 10).step(1);
+    gui.add(controls, 'highwayDensity', 0, 10).step(1);
     gui.add(controls, 'gridDensity', 0, 40).step(1);
     // gui.add(controls, 'angle', 0, 2).step(0.1);
     // gui.addColor(controls, 'color1');
@@ -6294,8 +6294,8 @@ function main() {
         //   l.c2 = c2;
         //   console.log('check updating');
         //       //LSystem
-        if (l.iteration != controls.iteration) {
-            l.iteration = controls.iteration;
+        if (l.iteration != controls.highwayDensity) {
+            l.iteration = controls.highwayDensity;
             //var grammar = l.expansion();
             //  l.draw(branch, petal, angle);
             l.drawRoad(square);
