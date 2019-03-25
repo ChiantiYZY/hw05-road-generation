@@ -1,9 +1,11 @@
 import {vec3} from 'gl-matrix';
 import Turtle from './Turtle';
+import gridTurtles from './GridTurtle';
 import Terrain from './Terrain';
 import {readTextFile} from './globals';
 import Mesh from './geometry/Mesh';
 import { totalmem } from 'os';
+import GridTurtle from './GridTurtle';
 //import { scale } from 'gl-matrix/src/gl-matrix/vec2';
 
 export default class Draw {
@@ -18,6 +20,9 @@ export default class Draw {
 
     roads = new Array();
 
+    gridTurtles : Array<GridTurtle> = [new GridTurtle()];
+    curGrid = this.gridTurtles[0];
+
     //scale = Math.random();
 
     constructor()
@@ -28,6 +33,10 @@ export default class Draw {
         this.sca = 1.0;
         this.ang = 1.0;
 
+    }
+
+    getRandomInt(max : number) {
+        return Math.floor(Math.random() * Math.floor(max));
     }
 
     intersectionTest(e0: vec3, e1: vec3, o0: vec3, o1: vec3) {
@@ -115,33 +124,37 @@ export default class Draw {
 
     rotateRight()
     {
-        let flag = Math.random();
-        let angle = this.ang * Math.random();
+        // let flag = Math.random();
+        // let angle = this.ang * Math.random();
 
 
-        //this.cur.rotateOnZ(1.57 * angle);
+        // //this.cur.rotateOnZ(1.57 * angle);
         
-        if(flag < 0.33)
-            this.cur.rotateOnZ(angle);
-        else if(flag < 0.67)  
-            this.cur.rotateOnY(angle);
-        else
-            this.cur.rotateOnX(angle);
+        // if(flag < 0.33)
+        //     this.cur.rotateOnZ(angle);
+        // else if(flag < 0.67)  
+        //     this.cur.rotateOnY(angle);
+        // else
+        //     this.cur.rotateOnX(angle);
         // else    
         //     this.cur.growUp(1);
+
+        this.curGrid.rotateOnZ(3.14 / 2.0);
     }
 
     rotateLeft()
     {
-        let flag = Math.random();
-        let angle = this.ang * -Math.random();
+        // let flag = Math.random();
+        // let angle = this.ang * -Math.random();
         
-        if(flag < 0.33)
-            this.cur.rotateOnZ(angle);
-        else if(flag < 0.67)  
-            this.cur.rotateOnY(angle);
-        else
-            this.cur.rotateOnX(angle);
+        // if(flag < 0.33)
+        //     this.cur.rotateOnZ(angle);
+        // else if(flag < 0.67)  
+        //     this.cur.rotateOnY(angle);
+        // else
+        //     this.cur.rotateOnX(angle);
+
+        this.curGrid.rotateOnZ(-3.14 / 2.0);
     }
 
     rotateForward()
@@ -166,7 +179,7 @@ export default class Draw {
         // console.log('check seek');
         var cur_map = this.turtles.map;
         var step = 1.0;
-        var angle = 2.0 * 3.14 / 4.0;
+        var angle = 3.14 / 8.0;
 
         var highDense = 0;
 
@@ -181,45 +194,31 @@ export default class Draw {
 
 
 
-            let tmp = new Turtle();
-            tmp.copy(this.cur);
+            // let tmp = new Turtle();
+            // tmp.copy(this.cur);
 
             var dis = vec3.fromValues(0, 0, 0);
             var length = 100;
 
-            var i = Math.random() * 100 % 4;
-                tmp.rotateOnZ(angle * i);
-                tmp.growUp(0.6);
 
-                vec3.subtract(dis, tmp.position, tmp.prevPos);
-                length = Math.sqrt(dis[0] * dis[0] + dis[1] * dis[1]);
-
-            
-            
-            while(length < 0.05)
+            for(var i = 0; i < 4; i++)
             {
+                let tmp = new Turtle();
                 tmp.copy(this.cur);
-                var i = Math.random() * 100 % 4;
-                tmp.rotateOnZ(angle * i);
-                tmp.growUp(0.6);
-                vec3.subtract(dis, tmp.position, tmp.prevPos);
-                console.log(dis);
-                length = Math.sqrt(dis[0] * dis[0] + dis[1] * dis[1]);
+                tmp.rotateOnZ(angle * i + Math.random());
+                tmp.growUp(0.4);
+                var position = tmp.position;
+                var density = this.map.getDensity(position);
+                if(density > highDense)
+                {
+                    flag = true;
+                    highDense = density;
+                    new_turtle.copy(tmp);
+                }
+
             }
 
-           
-            var position = tmp.position;
-
-            var density = this.map.getDensity(position);
-
-            if(highDense < density)
-            {
-                flag = true;
-                highDense = density;
-                new_turtle.copy(tmp);
-            }
-
-            if(density < 0)
+            if(highDense < 0)
             {
                 this.popTurtle();
                 return;
@@ -247,10 +246,56 @@ export default class Draw {
             }
             else
             {
+                console.log('check pop');
                 if(this.turtles.length > 0)
                     this.popTurtle();
             }
 
+            // var prevGridPos = this.curGrid.position;
+            // var relativeTurtlePos = vec3.fromValues(0, 0, 0);
+            // vec3.subtract(relativeTurtlePos, this.cur.position, this.cur.prevPos);
+            // relativeTurtlePos = vec3.fromValues(relativeTurtlePos[0] / 2.0, relativeTurtlePos[1] / 2.0, 0);
+            // var realGridPos = vec3.fromValues(0, 0, 0);
+            // vec3.add(realGridPos, prevGridPos, relativeTurtlePos);
+            this.curGrid.copy(this.cur);
+            //this.curGrid.position = realGridPos;
+
+    }
+
+    gridForward()
+    {
+        var dir = Math.random();
+        if(dir < 0.5)
+        {
+            this.curGrid.growUp(0.05);
+            if(this.map.getDensity(this.curGrid.position) < 0)
+            {
+                this.curGrid.growUp(-0.05);
+            }
+        }
+        else
+        {
+            this.curGrid.growUp(-0.05);
+            if(this.map.getDensity(this.curGrid.position) < 0)
+            {
+                this.curGrid.growUp(0.05);
+            }
+        }
+    }
+
+    pushGrid()
+    {
+        let tmp = new Turtle();
+        tmp.copy(this.curGrid);
+       // vec3.copy(tmp.prevPos, this.cur.position);
+        this.gridTurtles.push(tmp);
+
+    }
+
+    popGrid()
+    {
+        let tmp = this.gridTurtles.pop();
+        this.curGrid.copy(tmp);
     }
 
     setRule()
@@ -268,7 +313,9 @@ export default class Draw {
 
         //this.rules.set('B', this.seek.bind(this));
         this.rules.set('B', this.seek.bind(this));
-        
+        this.rules.set('G', this.gridForward.bind(this));
+        this.rules.set('(', this.pushGrid.bind(this));
+        this.rules.set(')', this.popGrid.bind(this));
         
     }
 

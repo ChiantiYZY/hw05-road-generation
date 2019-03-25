@@ -17,7 +17,8 @@ import Terrain from './Terrain';
 // Define an object with application parameters and button callbacks
 // This will be referred to by dat.GUI's functions that add GUI elements.
 const controls = {
-  iteration: 1,
+  iteration: 0,
+  gridDensity: 0,
   // angle: 1,
   // color1: [0.2314 * 255, 0.149 * 255, 0.0],
   // color2: [0.9333 * 255, 0.6706 * 255, 0.6706 * 255],
@@ -29,6 +30,7 @@ const controls = {
 const  m = mat2.fromValues( 0.80,  0.60, -0.60,  0.80 );
 
 let square: Square;
+let road: Square;
 let screenQuad: ScreenQuad;
 let branch: Mesh;
 let petal:Mesh;
@@ -44,108 +46,14 @@ function loadScene() {
   square = new Square();
   square.create();
 
+  road = new Square();
+  road.create();
+
 
   map = new Terrain();
 
 
   // let transform = mat4.create();
-
-
-  // let offsetsArray = [];
-  // let colorsArray = [];
-  // let n: number = 0.0;
-  
-  //   //square.transArray1.push(transform[0] );
-  //   square.transArray1.push(1);
-  //   square.transArray1.push(transform[1]);
-  //   square.transArray1.push(transform[2]);
-  //   square.transArray1.push(transform[3] );
-
-  //   square.transArray2.push(transform[4]);
-  //   // square.transArray2.push(transform[5] );
-  //   square.transArray2.push(1);
-  //   square.transArray2.push(transform[6]);
-  //   square.transArray2.push(transform[7] );
-    
-  //   square.transArray3.push(transform[8]);
-  //   square.transArray3.push(transform[9]);
-  //   // square.transArray3.push(transform[10]);
-  //   square.transArray3.push(1);
-  //   square.transArray3.push(transform[11]);
-
-  //   // square.transArray4.push(transform[12]);
-  //   // square.transArray4.push(transform[13]);
-  //   // square.transArray4.push(transform[14]);
-  //   // square.transArray4.push(transform[15]);
-
-  // square.transArray1.push(0.01);
-  // square.transArray1.push(0);
-  // square.transArray1.push(0);
-  // square.transArray1.push(0);
-
-  // square.transArray2.push(0);
-  // square.transArray2.push(10);
-  // square.transArray2.push(0);
-  // square.transArray2.push(0);
-
-  // square.transArray3.push(0);
-  // square.transArray3.push(0);
-  // square.transArray3.push(1);
-  // square.transArray3.push(0);
-
-  //   square.transArray4.push(0);
-  //   square.transArray4.push(0);
-  //   square.transArray4.push(0);
-  //   square.transArray4.push(1);
-
-
-
-    // square.transArray1.push(10);
-    // square.transArray1.push(0);
-    // square.transArray1.push(0);
-    // square.transArray1.push(0);
-  
-    // square.transArray2.push(0);
-    // square.transArray2.push(0.01);
-    // square.transArray2.push(0);
-    // square.transArray2.push(0);
-  
-    // square.transArray3.push(0);
-    // square.transArray3.push(0);
-    // square.transArray3.push(1);
-    // square.transArray3.push(0);
-  
-    //   square.transArray4.push(0);
-    //   square.transArray4.push(0);
-    //   square.transArray4.push(0);
-    //   square.transArray4.push(1);
-
-  //     n ++;
-    
-
-
-  // for(let i = 0; i < n; i++) {
-  //   for(let j = 0; j < n; j++) {
-  //     offsetsArray.push(i);
-  //     offsetsArray.push(j);
-  //     offsetsArray.push(0);
-
-  //     colorsArray.push(i / n);
-  //     colorsArray.push(j / n);
-  //     colorsArray.push(1.0);
-  //     colorsArray.push(1.0); // Alpha channel
-  //   }
-  // }
-  // let offsets: Float32Array = new Float32Array(offsetsArray);
-  // let colors: Float32Array = new Float32Array(colorsArray);
-
-
-  // let array1: Float32Array = new Float32Array(square.transArray1);
-  //       let array2: Float32Array = new Float32Array(square.transArray2);
-  //       let array3: Float32Array = new Float32Array(square.transArray3);
-  //       let array4: Float32Array = new Float32Array(square.transArray4);
-  // square.setInstanceVBOs1(array1, array2, array3, array4);
-  // square.setNumInstances(2);
 
 
 }
@@ -166,7 +74,8 @@ function main() {
   // Add controls to the gui
   const gui = new DAT.GUI();
 
-  gui.add(controls, 'iteration', 1, 20).step(1);
+  gui.add(controls, 'iteration', 0, 10).step(1);
+  gui.add(controls,'gridDensity', 0, 40).step(1);
   // gui.add(controls, 'angle', 0, 2).step(0.1);
   // gui.addColor(controls, 'color1');
   // gui.addColor(controls, 'color2');
@@ -292,6 +201,12 @@ function main() {
         //  l.draw(branch, petal, angle);
         l.drawRoad(square);
     }
+
+    if(l.gridIter != controls.gridDensity)
+    {
+      l.gridIter = controls.gridDensity;
+      l.drawGrid(road);
+    }
            
     //       //.log("check iteration: " + l.iteration + "\n");
            
@@ -303,7 +218,7 @@ function main() {
     renderer.render(camera, flat, [screenQuad], terrain, density);
     
     renderer.render1(camera, instancedShader, [
-      square,
+      square, road
     ]);
 
 

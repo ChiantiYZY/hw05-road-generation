@@ -9,6 +9,9 @@ export default class Expansion {
         //this.rules.set('*', 'F*');
         this.rules.set('A', 'BA');
         this.rules.set('B', 'A');
+
+        this.rules.set('X', '[-G]XG[+G][+G]');
+        //this.rules.set('G', 'GG');
     }
 
 

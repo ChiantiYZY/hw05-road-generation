@@ -1,7 +1,9 @@
 import {vec2, vec3, quat, mat3, mat4} from 'gl-matrix';
 import Terrain from './Terrain';
+import Draw from './Draw';
+import Turtle from './Turtle';
 
-export default class Turtle {
+export default class GridTurtle {
 
     position: vec3 = vec3.create();
     prevPos: vec3 = vec3.create();
@@ -11,11 +13,16 @@ export default class Turtle {
     orientation: quat = quat.create();
     scale: number;
     map: Terrain;
-    turtles: Array<Turtle>;
+    turtles: Array<GridTurtle>;
+    
 
 
   constructor() {
-    this.prevPos = vec3.fromValues(0,-3,0);
+
+    this.position = vec3.fromValues(0, 0, 0);
+
+    
+    this.prevPos = vec3.fromValues(0,0,0);
     this.up = vec3.fromValues(0, 1, 0);
     this.forward = vec3.fromValues(0, 0, 1);
     this.right = vec3.fromValues(1, 0, 0);
@@ -82,7 +89,7 @@ export default class Turtle {
     //vec3.copy(this.position, turtle.prevPos);
     // vec3.copy(this.position, turtle.position);
     // vec3.copy(this.prevPos, turtle.prevPos);
-    quat.copy(this.orientation, turtle.orientation);
+   // quat.copy(this.orientation, turtle.orientation);
     vec3.copy(this.up, turtle.up);
     vec3.copy(this.right, turtle.right);
     vec3.copy(this.forward, turtle.forward);
@@ -91,8 +98,8 @@ export default class Turtle {
 
     this.position = vec3.fromValues(turtle.position[0], turtle.position[1], turtle.position[2]);
     this.prevPos = vec3.fromValues(turtle.prevPos[0], turtle.prevPos[1], turtle.prevPos[2]);
+    this.orientation = turtle.orientation;
   }
-
 
 
 
