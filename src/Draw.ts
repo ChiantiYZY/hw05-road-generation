@@ -250,15 +250,7 @@ export default class Draw {
                 if(this.turtles.length > 0)
                     this.popTurtle();
             }
-
-            // var prevGridPos = this.curGrid.position;
-            // var relativeTurtlePos = vec3.fromValues(0, 0, 0);
-            // vec3.subtract(relativeTurtlePos, this.cur.position, this.cur.prevPos);
-            // relativeTurtlePos = vec3.fromValues(relativeTurtlePos[0] / 2.0, relativeTurtlePos[1] / 2.0, 0);
-            // var realGridPos = vec3.fromValues(0, 0, 0);
-            // vec3.add(realGridPos, prevGridPos, relativeTurtlePos);
             this.curGrid.copy(this.cur);
-            //this.curGrid.position = realGridPos;
 
     }
 

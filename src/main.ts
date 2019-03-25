@@ -193,19 +193,24 @@ function main() {
 
     //   console.log('check updating');
     //       //LSystem
-    if(l.iteration != controls.highwayDensity)
+    if(l.iteration != controls.highwayDensity && l.gridIter != controls.gridDensity)
+    {
+      l.iteration = controls.highwayDensity;
+      l.gridIter = controls.gridDensity;
+      l.drawMap(square,road, 2);
+    }
+    else if(l.iteration != controls.highwayDensity)
     {
         l.iteration = controls.highwayDensity;
         //var grammar = l.expansion();
       
         //  l.draw(branch, petal, angle);
-        l.drawRoad(square);
+        l.drawMap(square, road, 0);
     }
-
-    if(l.gridIter != controls.gridDensity)
+    else if(l.gridIter != controls.gridDensity)
     {
       l.gridIter = controls.gridDensity;
-      l.drawGrid(road);
+      l.drawMap(square, road, 1);
     }
            
     //       //.log("check iteration: " + l.iteration + "\n");

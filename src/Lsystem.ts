@@ -251,6 +251,26 @@ export default class Lsytem {
     }
 
 
+
+    drawMap(sq : Square, sq1: Square, flag: number)
+    {
+        if(flag == 0)
+        {
+            this.drawRoad(sq);
+        }
+        if(flag == 1)
+        {
+            this.drawGrid(sq1);
+        }
+        if(flag == 2)
+        {
+            this.drawRoad(sq);
+            this.drawGrid(sq1);
+        } 
+        
+    }
+
+
     drawRoad(sq : Square)
     {
 
@@ -364,10 +384,6 @@ export default class Lsytem {
             }
         }
 
-
-
-
-
        var roadPos = vec3.fromValues(0, 0, 0);
         if(this.drawing.roads.length != 0)
         {
@@ -380,6 +396,10 @@ export default class Lsytem {
         //var countGrid2 = this.drawGrid(sq, roadPos);
 
         //let offsets: Float32Array = new Float32Array(offsetsArray);
+
+        //count += this.drawGrid(sq);
+
+
         let array1: Float32Array = new Float32Array(sq.transArray1);
         let array2: Float32Array = new Float32Array(sq.transArray2);
         let array3: Float32Array = new Float32Array(sq.transArray3);
@@ -387,7 +407,6 @@ export default class Lsytem {
 
         sq.setInstanceVBOs1(array1, array2, array3, array4);
         sq.setNumInstances(count); // grid of "particles"
-
         //p.create();
     }
 
@@ -523,6 +542,8 @@ export default class Lsytem {
 
         sq.setInstanceVBOs1(array1, array2, array3, array4);
         sq.setNumInstances(count); // grid of "particles"
+
+        return count;
 
     }
 

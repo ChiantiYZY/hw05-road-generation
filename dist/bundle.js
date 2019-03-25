@@ -6294,15 +6294,20 @@ function main() {
         //   l.c2 = c2;
         //   console.log('check updating');
         //       //LSystem
-        if (l.iteration != controls.highwayDensity) {
+        if (l.iteration != controls.highwayDensity && l.gridIter != controls.gridDensity) {
+            l.iteration = controls.highwayDensity;
+            l.gridIter = controls.gridDensity;
+            l.drawMap(square, road, 2);
+        }
+        else if (l.iteration != controls.highwayDensity) {
             l.iteration = controls.highwayDensity;
             //var grammar = l.expansion();
             //  l.draw(branch, petal, angle);
-            l.drawRoad(square);
+            l.drawMap(square, road, 0);
         }
-        if (l.gridIter != controls.gridDensity) {
+        else if (l.gridIter != controls.gridDensity) {
             l.gridIter = controls.gridDensity;
-            l.drawGrid(road);
+            l.drawMap(square, road, 1);
         }
         //       //.log("check iteration: " + l.iteration + "\n");
         // }
@@ -17020,6 +17025,18 @@ class Lsytem {
         p.setNumInstances(count1);
         //p.create();
     }
+    drawMap(sq, sq1, flag) {
+        if (flag == 0) {
+            this.drawRoad(sq);
+        }
+        if (flag == 1) {
+            this.drawGrid(sq1);
+        }
+        if (flag == 2) {
+            this.drawRoad(sq);
+            this.drawGrid(sq1);
+        }
+    }
     drawRoad(sq) {
         let count = 0;
         var grammar = this.expansion();
@@ -17100,6 +17117,7 @@ class Lsytem {
         //count += this.drawGrid(sq, roadPos);
         //var countGrid2 = this.drawGrid(sq, roadPos);
         //let offsets: Float32Array = new Float32Array(offsetsArray);
+        //count += this.drawGrid(sq);
         let array1 = new Float32Array(sq.transArray1);
         let array2 = new Float32Array(sq.transArray2);
         let array3 = new Float32Array(sq.transArray3);
@@ -17192,6 +17210,7 @@ class Lsytem {
         let array4 = new Float32Array(sq.transArray4);
         sq.setInstanceVBOs1(array1, array2, array3, array4);
         sq.setNumInstances(count); // grid of "particles"
+        return count;
     }
 }
 /* harmony export (immutable) */ __webpack_exports__["a"] = Lsytem;
@@ -17214,7 +17233,7 @@ class Expansion {
         //this.rules.set('*', 'F*');
         this.rules.set('A', 'BA');
         this.rules.set('B', 'A');
-        this.rules.set('X', '[-G]XG[+G][+G]');
+        this.rules.set('X', '[-G]XG[+G]');
         //this.rules.set('G', 'GG');
     }
     expanse(grammar) {
@@ -17411,14 +17430,7 @@ class Draw {
             if (this.turtles.length > 0)
                 this.popTurtle();
         }
-        // var prevGridPos = this.curGrid.position;
-        // var relativeTurtlePos = vec3.fromValues(0, 0, 0);
-        // vec3.subtract(relativeTurtlePos, this.cur.position, this.cur.prevPos);
-        // relativeTurtlePos = vec3.fromValues(relativeTurtlePos[0] / 2.0, relativeTurtlePos[1] / 2.0, 0);
-        // var realGridPos = vec3.fromValues(0, 0, 0);
-        // vec3.add(realGridPos, prevGridPos, relativeTurtlePos);
         this.curGrid.copy(this.cur);
-        //this.curGrid.position = realGridPos;
     }
     gridForward() {
         var dir = Math.random();
